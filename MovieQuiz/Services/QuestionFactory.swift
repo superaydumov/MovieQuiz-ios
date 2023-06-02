@@ -81,6 +81,10 @@ class QuestionFactory: QuestionFactoryProtocol {
             }
             catch {
                 print ("Failed to load image.")
+                DispatchQueue.main.async { [weak self] in
+                    guard let self = self else { return }
+                    self.delegate?.didFailToLoadData(with: error)
+                }
             }
             
             let rating = Float (movie.rating) ?? 0

@@ -52,6 +52,8 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     // MARK: - QuestionFactoryDelegate
     
     func didReceiveNextQuestion(question: QuizQuestion?) {
+        noButton.isEnabled = true
+        yesButton.isEnabled = true
         guard let question = question else {
             return
         }
@@ -65,11 +67,15 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     func didLoadDataFromServer () {
         hideLoadingIndicator()
         questionFactory?.requestNextQuestion()
+        noButton.isEnabled = false
+        yesButton.isEnabled = false
     }
     
     func didFailToLoadData (with error: Error) {
         hideLoadingIndicator()
         showNetworkError(message: error.localizedDescription)
+        noButton.isEnabled = false
+        yesButton.isEnabled = false
     }
     
     // MARK: - UI Setup
@@ -200,7 +206,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     private func showNetworkError (message: String) {
         hideLoadingIndicator()
         
-        let alertModel = AlertModel (title: "Что-то пошло не так", message: "Не удалось загрузить данные", buttonText: "Попробовать ещё раз", completion: { [weak self] in
+        let alertModel = AlertModel (title: "Что-то пошло не так", message: message, buttonText: "Попробовать ещё раз", completion: { [weak self] in
             guard let self = self else { return }
             
             self.currentQuestionIndex = 0
