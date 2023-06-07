@@ -68,6 +68,8 @@ class QuestionFactory: QuestionFactoryProtocol {
     }
     
     func requestNextQuestion () {
+        delegate?.activityIndicator.startAnimating()
+        
         DispatchQueue.global().async { [weak self] in
             guard let self = self else { return }
             let index = (0..<self.movies.count).randomElement() ?? 0
@@ -89,9 +91,21 @@ class QuestionFactory: QuestionFactoryProtocol {
             
             let rating = Float (movie.rating) ?? 0
             
-            let textIndex = (4...9).randomElement() ?? 0
-            let text = "Рейтинг этого фильма больше, чем \(textIndex)?"
-            let correctAnswer = rating > Float(textIndex)
+            let randomIndex = (0...1).randomElement() ?? 0
+            let textIndex = (5...8).randomElement() ?? 0
+            var questionsArray: Array = ["Рейтинг этого фильма больше, чем \(textIndex)?",
+                                         "Рейтинг этого фильма меньше, чем \(textIndex)?"]
+            
+            var text = ""
+            var correctAnswer: Bool
+            
+            if randomIndex == 0 {
+                text.append(String(questionsArray[0]))
+                correctAnswer = rating > Float(textIndex)
+            } else {
+                text.append(String(questionsArray[1]))
+                correctAnswer = rating < Float(textIndex)
+            }
             
             let question = QuizQuestion(image: imageData, text: text, correctAnswer: correctAnswer)
             

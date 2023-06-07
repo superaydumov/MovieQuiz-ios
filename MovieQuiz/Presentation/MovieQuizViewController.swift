@@ -1,7 +1,7 @@
 import UIKit
 
 final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
-    // MARK: - Lifecycle
+    // MARK: - Outlets
     
     @IBOutlet private weak var questionLabel: UILabel!
     @IBOutlet private weak var yesButton: UIButton!
@@ -38,8 +38,8 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         
         questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
         
-        showLoadingIndicator()
-
+        activityIndicator.hidesWhenStopped = true
+        
         questionFactory?.loadData()
         questionFactory?.requestNextQuestion()
     
@@ -52,11 +52,13 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     // MARK: - QuestionFactoryDelegate
     
     func didReceiveNextQuestion(question: QuizQuestion?) {
+        activityIndicator.stopAnimating()
         noButton.isEnabled = true
         yesButton.isEnabled = true
+        
         guard let question = question else {
-            return
-        }
+            return }
+        
         currentQuestion = question
         let viewModel = convert (model: question)
         DispatchQueue.main.async { [weak self] in
@@ -65,17 +67,13 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
     func didLoadDataFromServer () {
-        hideLoadingIndicator()
+        activityIndicator.stopAnimating()
         questionFactory?.requestNextQuestion()
-        noButton.isEnabled = false
-        yesButton.isEnabled = false
     }
     
     func didFailToLoadData (with error: Error) {
-        hideLoadingIndicator()
+        activityIndicator.stopAnimating()
         showNetworkError(message: error.localizedDescription)
-        noButton.isEnabled = false
-        yesButton.isEnabled = false
     }
     
     // MARK: - UI Setup
@@ -181,6 +179,8 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
     private func showNextQuestionOrResult () {
+        activityIndicator.stopAnimating()
+        
         previewImage.layer.borderColor = UIColor.clear.cgColor
         yesButton.isEnabled = true
         noButton.isEnabled = true
@@ -193,18 +193,11 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         }
     }
     
-    private func showLoadingIndicator() {
-        activityIndicator.isHidden = false
-        activityIndicator.startAnimating()
-    }
-    
-    private func hideLoadingIndicator() {
-        activityIndicator.isHidden = true
-        activityIndicator.stopAnimating()
-    }
-    
     private func showNetworkError (message: String) {
-        hideLoadingIndicator()
+        noButton.isEnabled = false
+        yesButton.isEnabled = false
+        
+        activityIndicator.stopAnimating()
         
         let alertModel = AlertModel (title: "Что-то пошло не так", message: message, buttonText: "Попробовать ещё раз", completion: { [weak self] in
             guard let self = self else { return }
@@ -228,6 +221,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         print ("Нажата кнопка - Да.")
         
         yesButton.isEnabled = false
+        noButton.isEnabled = false
         
     }
     
@@ -240,6 +234,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         print ("Нажата кнопка - Нет.")
         
         noButton.isEnabled = false
+        yesButton.isEnabled = false
     }
     
 }
