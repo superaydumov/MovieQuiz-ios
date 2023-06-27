@@ -12,26 +12,26 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     private var correctAnswers = 0
     private var currentQuestionIndex = 0
     
-    private weak var viewController: MovieQuizViewController?
+    private weak var viewController: MovieQuizControllerProtocol?
     private var questionFactory: QuestionFactoryProtocol?
     private let statisticService: StatisticServiceProtocol!
     
     var currentQuestion: QuizQuestion?
     
-    init (viewController: MovieQuizViewController) {
+    init (viewController: MovieQuizControllerProtocol?) {
         self.viewController = viewController
         
         statisticService = StatisticService()
         
         questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
         questionFactory?.loadData()
-        viewController.activityIndicator.startAnimating()
+        viewController?.showLoadingIndicator()
     }
    
     // MARK: - QuestionFactoryDelegate
     
     func didReceiveNextQuestion(question: QuizQuestion?) {
-        viewController?.activityIndicator.stopAnimating()
+        viewController?.hideLoadingIndicator()
         
         guard let question = question else {
             return }
@@ -44,12 +44,12 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     }
     
     func didLoadDataFromServer () {
-        viewController?.activityIndicator.stopAnimating()
+        viewController?.hideLoadingIndicator()
         questionFactory?.requestNextQuestion()
     }
     
     func didFailToLoadData (with error: Error) {
-        viewController?.activityIndicator.stopAnimating()
+        viewController?.hideLoadingIndicator()
         viewController?.showNetworkError(message: error.localizedDescription)
     }
     
@@ -92,7 +92,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     }
 
     func proceedToNextQuestionOrResult () {
-        viewController?.activityIndicator.startAnimating()
+        viewController?.showLoadingIndicator()
         if self.isLastQuestion() {
             viewController?.showAlert()
         } else {

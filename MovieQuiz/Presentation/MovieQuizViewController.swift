@@ -1,6 +1,6 @@
 import UIKit
 
-final class MovieQuizViewController: UIViewController {
+final class MovieQuizViewController: UIViewController, MovieQuizControllerProtocol {
     // MARK: - Outlets
     
     @IBOutlet private weak var questionLabel: UILabel!
@@ -34,7 +34,7 @@ final class MovieQuizViewController: UIViewController {
         noButtonUISetup()
         
         activityIndicator.hidesWhenStopped = true
-        activityIndicator.startAnimating()
+        //activityIndicator.startAnimating()
     
         alertPresenter = AlertPresenter(delegate: self)
         
@@ -123,19 +123,17 @@ final class MovieQuizViewController: UIViewController {
     
     private func showNextQuestionOrResult(isCorrect: Bool) {
         previewImage.layer.borderColor = UIColor.clear.cgColor
-        yesButton.isEnabled = true
-        noButton.isEnabled = true
+        enableButtons()
         
-        activityIndicator.stopAnimating()
+        hideLoadingIndicator()
         
         presenter.didCorrectAnswer(isCorrectAnswer: isCorrect)
     }
     
     func showNetworkError (message: String) {
-        noButton.isEnabled = false
-        yesButton.isEnabled = false
+        disableButtons()
         
-        activityIndicator.stopAnimating()
+        hideLoadingIndicator()
         
         let alertModel = AlertModel (title: "Что-то пошло не так",
                                      message: message,
@@ -145,6 +143,14 @@ final class MovieQuizViewController: UIViewController {
             self.presenter.restartGame() })
         
         alertPresenter?.show(quiz: alertModel)
+    }
+    
+    func showLoadingIndicator() {
+        activityIndicator.startAnimating()
+    }
+
+    func hideLoadingIndicator() {
+        activityIndicator.stopAnimating()
     }
     
     func enableButtons() {
