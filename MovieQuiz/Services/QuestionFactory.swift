@@ -7,7 +7,7 @@
 
 import Foundation
 
-class QuestionFactory: QuestionFactoryProtocol {
+final class QuestionFactory: QuestionFactoryProtocol {
     
     /*private let questions: [QuizQuestion] = [
         QuizQuestion (image: "The Godfather",
@@ -68,8 +68,6 @@ class QuestionFactory: QuestionFactoryProtocol {
     }
     
     func requestNextQuestion () {
-        delegate?.activityIndicator.startAnimating()
-        
         DispatchQueue.global().async { [weak self] in
             guard let self = self else { return }
             let index = (0..<self.movies.count).randomElement() ?? 0
@@ -91,9 +89,9 @@ class QuestionFactory: QuestionFactoryProtocol {
             
             let rating = Float (movie.rating) ?? 0
             
-            let randomIndex = (0...1).randomElement() ?? 0
-            let textIndex = (5...8).randomElement() ?? 0
-            var questionsArray: Array = ["Рейтинг этого фильма больше, чем \(textIndex)?",
+            let randomIndex = (0...1).randomElement()
+            let textIndex = (5...8).randomElement() ?? 9
+            let questionsArray: Array = ["Рейтинг этого фильма больше, чем \(textIndex)?",
                                          "Рейтинг этого фильма меньше, чем \(textIndex)?"]
             
             var text = ""
