@@ -37,7 +37,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
             return }
         
         currentQuestion = question
-        let viewModel = convert (model: question)
+        let viewModel = convert(model: question)
         DispatchQueue.main.async { [weak self] in
             self?.viewController?.show(quiz: viewModel)
         }
@@ -127,7 +127,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in guard let self = self else { return }
             self.proceedToNextQuestionOrResult()
-            viewController?.enableButtons()
+            self.viewController?.enableButtons()
         }
     }
 }

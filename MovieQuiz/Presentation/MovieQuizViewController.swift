@@ -34,7 +34,6 @@ final class MovieQuizViewController: UIViewController, MovieQuizControllerProtoc
         noButtonUISetup()
         
         activityIndicator.hidesWhenStopped = true
-        //activityIndicator.startAnimating()
     
         alertPresenter = AlertPresenter(delegate: self)
         
