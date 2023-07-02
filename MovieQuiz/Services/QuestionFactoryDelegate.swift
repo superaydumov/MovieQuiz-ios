@@ -13,6 +13,4 @@ protocol QuestionFactoryDelegate: AnyObject {
     
     func didLoadDataFromServer ()
     func didFailToLoadData (with error: Error)
-    
-    var activityIndicator: UIActivityIndicatorView! { get }
 }
